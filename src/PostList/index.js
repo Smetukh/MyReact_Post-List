@@ -5,7 +5,6 @@ import PostListItem from "./PostListItem";
 import "../styles.css";
 
 function PostList({ posts, loadMore, loadMoreCount, value }) {
-  console.log("posts = ", posts);
   return (
     <>
       <ul>
