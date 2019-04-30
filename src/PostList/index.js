@@ -31,12 +31,11 @@ function PostList({ posts, loadMore, loadMoreCount, value }) {
   );
 }
 PostList.propTypes = {
-  // posts: PropTypes.object,
-  // loadMore: PropTypes.function,
+  posts: PropTypes.array,
   loadMoreCount: PropTypes.number
 };
 PostList.defaultProps = {
-  posts: {},
+  posts: [],
   loadMoreCount: 0
 };
 

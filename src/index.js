@@ -9,7 +9,7 @@ export class App extends React.Component {
     this.state = {
       fetchedPosts: null,
       allPosts: null,
-      posts: null,
+      renderedPosts: null,
       loading: true,
       loadMoreCount: 20,
       value: "",
@@ -26,7 +26,7 @@ export class App extends React.Component {
         this.setState({
           fetchedPosts: allPosts,
           allPosts,
-          posts: allPosts.slice(0, 10),
+          renderedPosts: allPosts.slice(0, 10),
           loading: false
         })
       )
@@ -36,21 +36,25 @@ export class App extends React.Component {
     const { loadMoreCount, allPosts } = this.state;
     this.setState({
       loadMoreCount: loadMoreCount < allPosts.length ? loadMoreCount + 10 : 0,
-      posts: allPosts.slice(0, loadMoreCount)
+      renderedPosts: allPosts.slice(0, loadMoreCount)
     });
   };
   handleChange(event) {
     let { fetchedPosts } = this.state;
-    this.setState({ value: event.target.value });
+    // filter results in search bar
     let filtered = fetchedPosts.filter(function(post, index) {
-      let searchTitle = post.title.indexOf(event.target.value);
-      let searchBody = post.body.indexOf(event.target.value);
+      let searchTitle = post.title
+        .toLowerCase()
+        .indexOf(event.target.value.toLowerCase());
+      let searchBody = post.body
+        .toLowerCase()
+        .indexOf(event.target.value.toLowerCase());
       return searchTitle > -1 || searchBody > -1;
     });
-
     this.setState({
+      value: event.target.value,
       allPosts: filtered,
-      posts: filtered.slice(0, 10),
+      renderedPosts: filtered.slice(0, 10),
       loadMoreCount: filtered.length > 10 ? 20 : 0
     });
   }
@@ -60,7 +64,13 @@ export class App extends React.Component {
     event.preventDefault();
   }
   render() {
-    let { value, posts, loading, loadMoreCount, fetchedPosts } = this.state;
+    let {
+      value,
+      renderedPosts,
+      loading,
+      loadMoreCount,
+      fetchedPosts
+    } = this.state;
     return (
       <>
         {loading || !fetchedPosts.length ? (
@@ -81,7 +91,7 @@ export class App extends React.Component {
             </form>
             <PostList
               value={value}
-              posts={posts}
+              posts={renderedPosts}
               loadMore={this.loadMore}
               loadMoreCount={loadMoreCount}
             />

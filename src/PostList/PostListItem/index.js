@@ -20,8 +20,6 @@ export class PostListItem extends React.Component {
   }
 
   getHighlightedText(text, higlight) {
-    console.log("text = ", text);
-    console.log("higlight = ", higlight);
     // Split on higlight term and include term into parts, ignore case
     let parts = text.split(new RegExp(`(${higlight})`, "gi"));
     return (
@@ -31,7 +29,7 @@ export class PostListItem extends React.Component {
           <span
             key={i}
             style={
-              part.toLowerCase() === higlight.toLowerCase()
+              part && higlight && part.toLowerCase() === higlight.toLowerCase()
                 ? { fontWeight: "bold", backgroundColor: "yellow" }
                 : {}
             }
@@ -48,9 +46,13 @@ export class PostListItem extends React.Component {
         <h3>Author Id: {this.props.post.id}</h3>
         <h4>
           Title:{" "}
-          {this.getHighlightedText(this.props.post.title, this.props.value)}
+          {this.props.value && this.props.post.title
+            ? this.getHighlightedText(this.props.post.title, this.props.value)
+            : this.props.post.title}
         </h4>
-        {this.getHighlightedText(this.props.post.body, this.props.value)}
+        {this.props.value && this.props.post.body
+          ? this.getHighlightedText(this.props.post.body, this.props.value)
+          : this.props.post.body}
       </div>
     );
   }
