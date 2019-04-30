@@ -4,7 +4,8 @@ import PostListItem from "./PostListItem";
 
 import "../styles.css";
 
-function PostList({ posts, loadMore, loadMoreCount }) {
+function PostList({ posts, loadMore, loadMoreCount, value }) {
+  console.log("posts = ", posts);
   return (
     <>
       <ul>
@@ -12,7 +13,7 @@ function PostList({ posts, loadMore, loadMoreCount }) {
           posts.map((post, key) => (
             <div key={post + key} className="c-contactlist__contact">
               <li>
-                <PostListItem post={post} />
+                <PostListItem post={post} value={value} />
               </li>
             </div>
           ))}
@@ -31,7 +32,7 @@ function PostList({ posts, loadMore, loadMoreCount }) {
 }
 PostList.propTypes = {
   // posts: PropTypes.object,
-  loadMore: PropTypes.function,
+  // loadMore: PropTypes.function,
   loadMoreCount: PropTypes.number
 };
 PostList.defaultProps = {

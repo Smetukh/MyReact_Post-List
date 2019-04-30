@@ -35,12 +35,12 @@ export class App extends React.Component {
   loadMore = () => {
     const { loadMoreCount, allPosts } = this.state;
     this.setState({
-      loadMoreCount: loadMoreCount < allPosts.length ? loadMoreCount + 33 : 0,
+      loadMoreCount: loadMoreCount < allPosts.length ? loadMoreCount + 10 : 0,
       posts: allPosts.slice(0, loadMoreCount)
     });
   };
   handleChange(event) {
-    let { value, fetchedPosts } = this.state;
+    let { fetchedPosts } = this.state;
     this.setState({ value: event.target.value });
     let filtered = fetchedPosts.filter(function(post, index) {
       let searchTitle = post.title.indexOf(event.target.value);
@@ -80,6 +80,7 @@ export class App extends React.Component {
               </label>
             </form>
             <PostList
+              value={value}
               posts={posts}
               loadMore={this.loadMore}
               loadMoreCount={loadMoreCount}
