@@ -2,6 +2,19 @@ import React from "react";
 import { render } from "react-dom";
 import PostList from "./PostList";
 import "./styles.css";
+import withFetch from "./withFetch";
+
+function Modal(props) {
+  return (
+    <div className="modal">
+      <div className="modal-content">
+        <span className="close">&times;</span>
+        <p>{props.data}</p>
+      </div>
+    </div>
+  );
+}
+const EnhancedModal = withFetch("Loading content...")(Modal);
 
 export class App extends React.Component {
   constructor(props) {
@@ -20,17 +33,19 @@ export class App extends React.Component {
   }
   componentDidMount() {
     const url = "https://jsonplaceholder.typicode.com/posts";
-    fetch(url)
-      .then(response => response.json())
-      .then(allPosts =>
-        this.setState({
-          fetchedPosts: allPosts,
-          allPosts,
-          renderedPosts: allPosts.slice(0, 10),
-          loading: false
-        })
-      )
-      .catch(error => console.error(error));
+    setTimeout(() => {
+      fetch(url)
+        .then(response => response.json())
+        .then(allPosts =>
+          this.setState({
+            fetchedPosts: allPosts,
+            allPosts,
+            renderedPosts: allPosts.slice(0, 10),
+            loading: false
+          })
+        )
+        .catch(error => console.error(error));
+    }, 3000);
   }
   loadMore = () => {
     const { loadMoreCount, allPosts } = this.state;
@@ -74,7 +89,10 @@ export class App extends React.Component {
     return (
       <>
         {loading || !fetchedPosts.length ? (
-          <div>Loading...</div>
+          <div>
+            Loading content...
+            <EnhancedModal />
+          </div>
         ) : (
           <>
             <form className="form_input" onSubmit={this.handleSubmit}>
@@ -95,6 +113,7 @@ export class App extends React.Component {
               loadMore={this.loadMore}
               loadMoreCount={loadMoreCount}
             />
+            {/* <EnhancedTest /> */}
           </>
         )}
       </>
