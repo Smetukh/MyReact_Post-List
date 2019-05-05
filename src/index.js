@@ -2,19 +2,19 @@ import React from "react";
 import { render } from "react-dom";
 import PostList from "./PostList";
 import "./styles.css";
-import withFetch from "./withFetch";
+import withSubscription from "./withSubscription";
 
 function Modal(props) {
   return (
     <div className="modal">
       <div className="modal-content">
-        <span className="close">&times;</span>
+        {/* <span className="close">&times;</span> */}
         <p>{props.data}</p>
       </div>
     </div>
   );
 }
-const EnhancedModal = withFetch("Loading content...")(Modal);
+const EnhancedModal = withSubscription("Loading content...")(Modal);
 
 export class App extends React.Component {
   constructor(props) {

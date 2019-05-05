@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 const modalRoot = document.getElementById("modal-root");
-const withFetch = entity => BaseComponent => {
-  class WithFetch extends React.Component {
+const withSubscription = entity => BaseComponent => {
+  class WithSubscription extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
@@ -31,6 +31,6 @@ const withFetch = entity => BaseComponent => {
       );
     }
   }
-  return WithFetch;
+  return WithSubscription;
 };
-export default withFetch;
+export default withSubscription;
