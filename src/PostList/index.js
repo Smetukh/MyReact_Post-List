@@ -5,6 +5,7 @@ import PostListItem from "./PostListItem";
 import "../styles.css";
 
 function PostList({ posts, loadMore, loadMoreCount, value }) {
+  console.log("loadMoreCount = ", loadMoreCount);
   return (
     <>
       <ul>
@@ -21,7 +22,7 @@ function PostList({ posts, loadMore, loadMoreCount, value }) {
       <button
         className="buttonMore"
         onClick={loadMore}
-        disabled={!loadMoreCount}
+        // disabled={!loadMoreCount}
         style={{ background: loadMoreCount ? "#40a9f3" : "#D3D3D3" }}
       >
         Load more

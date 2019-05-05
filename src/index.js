@@ -8,18 +8,20 @@ function Modal(props) {
   return (
     <div className="modal">
       <div className="modal-content">
-        {/* <span className="close">&times;</span> */}
+        {/* <span className="close" onClick={props.closeModal}>&times;</span> */}
         <p>{props.data}</p>
       </div>
     </div>
   );
 }
 const EnhancedModal = withSubscription("Loading content...")(Modal);
+const EnhancedModalMore = withSubscription("Out of posts")(Modal);
 
 export class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      outOfPosts: false,
       fetchedPosts: null,
       allPosts: null,
       renderedPosts: null,
@@ -48,11 +50,26 @@ export class App extends React.Component {
     }, 3000);
   }
   loadMore = () => {
-    const { loadMoreCount, allPosts } = this.state;
+    const { loadMoreCount, allPosts, renderedPosts } = this.state;
     this.setState({
-      loadMoreCount: loadMoreCount < allPosts.length ? loadMoreCount + 10 : 0,
-      renderedPosts: allPosts.slice(0, loadMoreCount)
+      loadMoreCount:
+        loadMoreCount && loadMoreCount < allPosts.length
+          ? loadMoreCount + 10
+          : 0,
+      renderedPosts: loadMoreCount
+        ? allPosts.slice(0, loadMoreCount)
+        : renderedPosts
     });
+    if (!loadMoreCount) {
+      this.setState({
+        outOfPosts: true
+      });
+      setTimeout(() => {
+        this.setState({
+          outOfPosts: false
+        });
+      }, 2000);
+    }
   };
   handleChange(event) {
     let { fetchedPosts } = this.state;
@@ -84,7 +101,8 @@ export class App extends React.Component {
       renderedPosts,
       loading,
       loadMoreCount,
-      fetchedPosts
+      fetchedPosts,
+      outOfPosts
     } = this.state;
     return (
       <>
@@ -113,7 +131,7 @@ export class App extends React.Component {
               loadMore={this.loadMore}
               loadMoreCount={loadMoreCount}
             />
-            {/* <EnhancedTest /> */}
+            {outOfPosts ? <EnhancedModalMore /> : null}
           </>
         )}
       </>
