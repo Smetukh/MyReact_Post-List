@@ -4,16 +4,41 @@ import PostListItem from "./PostListItem";
 
 import "../styles.css";
 
-function PostList({ posts, loadMore, loadMoreCount, value }) {
-  console.log("loadMoreCount = ", loadMoreCount);
+function PostList({
+  posts,
+  loadMore,
+  checkboxHandler,
+  loadMoreCount,
+  value,
+  checkedPost
+}) {
+  // const checkBox = (id) => {
+
+  //   console.log("id = ", id)};
   return (
     <>
       <ul>
         {posts &&
           posts.map((post, key) => (
-            <div key={post + key} className="c-contactlist__contact">
+            <div key={post + key} className="posts">
               <li>
-                <PostListItem post={post} value={value} />
+                <form className="posts">
+                  <label className="inline_block">
+                    Is going:
+                    <input
+                      name="isGoing"
+                      type="checkbox"
+                      checked={post.checked}
+                      onChange={e => checkboxHandler(e, key)}
+                    />
+                  </label>
+                  {/* <br /> */}
+                  <PostListItem
+                    className="inline_block"
+                    post={post}
+                    value={value}
+                  />
+                </form>
               </li>
             </div>
           ))}

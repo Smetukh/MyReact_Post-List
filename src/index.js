@@ -28,26 +28,35 @@ export class App extends React.Component {
       loading: true,
       loadMoreCount: 20,
       value: "",
-      searchResult: {}
+      searchResult: {},
+      valueAddNew: "",
+      checkedPosts: null
     };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleFilter = this.handleFilter.bind(this);
+    this.handleAddNewChange = this.handleAddNewChange.bind(this);
+    this.handleSubmitNew = this.handleSubmitNew.bind(this);
   }
   componentDidMount() {
     const url = "https://jsonplaceholder.typicode.com/posts";
     setTimeout(() => {
       fetch(url)
         .then(response => response.json())
-        .then(allPosts =>
+        .then(allPosts => {
+          allPosts.forEach(function(element) {
+            element.checked = Math.floor(Math.random() * Math.floor(2))
+              ? true
+              : false;
+          });
+
           this.setState({
             fetchedPosts: allPosts,
             allPosts,
             renderedPosts: allPosts.slice(0, 10),
             loading: false
-          })
-        )
+          });
+        })
         .catch(error => console.error(error));
-    }, 3000);
+    }, 500);
   }
   loadMore = () => {
     const { loadMoreCount, allPosts, renderedPosts } = this.state;
@@ -71,30 +80,93 @@ export class App extends React.Component {
       }, 2000);
     }
   };
-  handleChange(event) {
-    let { fetchedPosts } = this.state;
-    // filter results in search bar
-    let filtered = fetchedPosts.filter(function(post, index) {
-      let searchTitle = post.title
-        .toLowerCase()
-        .indexOf(event.target.value.toLowerCase());
-      let searchBody = post.body
-        .toLowerCase()
-        .indexOf(event.target.value.toLowerCase());
-      return searchTitle > -1 || searchBody > -1;
-    });
+  handleFilter = (event, checkedValue) => {
+    let { fetchedPosts, allPosts, checkedPosts } = this.state;
+    let filtered = [];
+
+    //show all posts
+    if (checkedValue === null) {
+      filtered = [...fetchedPosts];
+    } else {
+      //show checked/unchecked
+      if (!event.target.value) {
+        filtered = fetchedPosts.filter(function(post, index) {
+          return post.checked === checkedValue;
+        });
+      } else {
+        // filter results in search bar
+        filtered = allPosts.filter(function(post, index) {
+          let searchTitle = post.title
+            .toLowerCase()
+            .indexOf(event.target.value.toLowerCase());
+          let searchBody = post.body
+            .toLowerCase()
+            .indexOf(event.target.value.toLowerCase());
+          return searchTitle > -1 || searchBody > -1;
+        });
+      }
+    }
+
     this.setState({
+      checkedPosts: !event.target.value ? checkedValue : checkedPosts,
       value: event.target.value,
       allPosts: filtered,
       renderedPosts: filtered.slice(0, 10),
       loadMoreCount: filtered.length > 10 ? 20 : 0
     });
-  }
+  };
 
-  handleSubmit(event) {
-    alert("A name was submitted: " + this.state.value);
+  handleAddNewChange(event) {
+    this.setState({
+      valueAddNew: event.target.value
+      // allPosts: filtered,
+      // renderedPosts: filtered.slice(0, 10),
+      // loadMoreCount: filtered.length > 10 ? 20 : 0
+    });
+  }
+  handleSubmitNew(event) {
+    let { fetchedPosts, allPosts, valueAddNew } = this.state;
+    // console.log('renderedPosts = ', renderedPosts)
+    let newObj = {
+      userId: 1,
+      id: 0,
+      title: "aaa",
+      body: valueAddNew,
+      checked: false
+      // loadMoreCount: ++loadMoreCount
+    };
+    let newArray = [...fetchedPosts];
+    fetchedPosts.unshift(newObj);
+
+    this.setState({
+      fetchedPosts: fetchedPosts,
+      allPosts: fetchedPosts,
+      renderedPosts: allPosts.slice(0, 10),
+      valueAddNew: "",
+      value: ""
+    });
+    // console.log('newArr = ', newArr)
+    // alert("A name was submitted: " + valueAddNew);
     event.preventDefault();
   }
+  checkboxHandler = (event, id) => {
+    // console.log('this.state = ' + this.state)
+    let { allPosts } = this.state;
+    const target = event.target;
+    // const value = target.type === "checkbox" ? target.checked : target.value;
+    // const name = target.name;
+    // console.log("key = ", key);
+
+    let allPostsSpread = [...allPosts];
+    console.log("allPosts = ", allPosts);
+    allPostsSpread[id].checked = target.checked;
+    console.log("allPostsSpread[id] = ", allPostsSpread[id]);
+    // console.log("value = ", id);
+    // console.log("target = ", target.checked);
+    this.setState({
+      allPosts: allPostsSpread
+    });
+  };
   render() {
     let {
       value,
@@ -102,7 +174,8 @@ export class App extends React.Component {
       loading,
       loadMoreCount,
       fetchedPosts,
-      outOfPosts
+      outOfPosts,
+      checkedPosts
     } = this.state;
     return (
       <>
@@ -113,7 +186,7 @@ export class App extends React.Component {
           </div>
         ) : (
           <>
-            <form className="form_input" onSubmit={this.handleSubmit}>
+            <form className="form_input">
               <label>
                 Search title/post:
                 <input
@@ -121,15 +194,47 @@ export class App extends React.Component {
                   placeholder="Type something good here..."
                   type="text"
                   value={this.state.value}
-                  onChange={this.handleChange}
+                  onChange={this.handleFilter}
                 />
               </label>
             </form>
+            <form className="form_input" onSubmit={this.handleSubmitNew}>
+              <label>
+                Add New Post:
+                <input
+                  className="header_input"
+                  placeholder="Type something good here..."
+                  type="text"
+                  value={this.state.valueAddNew}
+                  onChange={this.handleAddNewChange}
+                />
+              </label>
+              <input type="submit" value="Submit" />
+            </form>
+            <button
+              disabled={checkedPosts === null}
+              onClick={e => this.handleFilter(e, null)}
+            >
+              All
+            </button>
+            <button
+              disabled={checkedPosts === false}
+              onClick={e => this.handleFilter(e, false)}
+            >
+              Active
+            </button>
+            <button
+              disabled={checkedPosts}
+              onClick={e => this.handleFilter(e, true)}
+            >
+              Completed
+            </button>
             <PostList
               value={value}
               posts={renderedPosts}
               loadMore={this.loadMore}
               loadMoreCount={loadMoreCount}
+              checkboxHandler={this.checkboxHandler}
             />
             {outOfPosts ? <EnhancedModalMore /> : null}
           </>
