@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import PostListItem from "./PostListItem";
+import PostListItem from "./PostListItem/PostListItem";
 
-import "../styles.css";
+import "../../styles.css";
 
 function PostList({
   posts,
