@@ -4,17 +4,7 @@ import PostListItem from "./PostListItem/PostListItem";
 
 import "../../styles.css";
 
-function PostList({
-  posts,
-  loadMore,
-  checkboxHandler,
-  loadMoreCount,
-  value,
-  checkedPost
-}) {
-  // const checkBox = (id) => {
-
-  //   console.log("id = ", id)};
+function PostList({ posts, loadMore, checkboxHandler, loadMoreCount, value }) {
   return (
     <>
       <ul>
@@ -24,7 +14,7 @@ function PostList({
               <li>
                 <form className="posts">
                   <label className="inline_block">
-                    Is going:
+                    Done:
                     <input
                       name="isGoing"
                       type="checkbox"

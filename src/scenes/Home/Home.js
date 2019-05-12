@@ -1,15 +1,15 @@
 import React from "react";
-import PostList from "../PostList/PostList";
-import { routes } from "../router";
-import { Link } from "react-router-dom";
-import "../../styles.css";
 import withSubscription from "../withSubscription";
+import PostList from "../PostList/PostList";
+import Search from "../Search/Search";
+import NewPost from "../NewPost/NewPost";
+import ButtonsStatus from "../ButtonsStatus/ButtonsStatus";
+import "../../styles.css";
 
 function Modal(props) {
   return (
     <div className="modal">
       <div className="modal-content">
-        {/* <span className="close" onClick={props.closeModal}>&times;</span> */}
         <p>{props.data}</p>
       </div>
     </div>
@@ -48,7 +48,6 @@ export class Home extends React.Component {
               ? true
               : false;
           });
-
           this.setState(
             {
               fetchedPosts: allPosts,
@@ -63,7 +62,6 @@ export class Home extends React.Component {
         })
         .catch(error => console.error(error));
     }, 500);
-    // this.handleFilter('')
   }
   loadMore = () => {
     const { loadMoreCount, allPosts, renderedPosts } = this.state;
@@ -87,6 +85,7 @@ export class Home extends React.Component {
       }, 2000);
     }
   };
+
   handleFilter = event => {
     let { fetchedPosts, checkedPosts } = this.state;
     let filtered = [];
@@ -97,7 +96,6 @@ export class Home extends React.Component {
     } else {
       //show checked/unchecked
       if (!event.target && !searchValue) {
-        console.log("fetchedPosts = ", fetchedPosts);
         filtered = fetchedPosts.filter(function(post, index) {
           return post.checked === event;
         });
@@ -114,7 +112,6 @@ export class Home extends React.Component {
         });
       }
     }
-
     this.setState({
       checkedPosts: !event.target && !searchValue ? event : checkedPosts,
       value: searchValue,
@@ -127,45 +124,50 @@ export class Home extends React.Component {
   handleAddNewChange(event) {
     this.setState({
       valueAddNew: event.target.value
-      // allPosts: filtered,
-      // renderedPosts: filtered.slice(0, 10),
-      // loadMoreCount: filtered.length > 10 ? 20 : 0
     });
   }
+
   handleSubmitNew(event) {
-    let { fetchedPosts, allPosts, valueAddNew } = this.state;
+    let { fetchedPosts, valueAddNew } = this.state;
     let newObj = {
       userId: 1,
       id: 0,
-      title: "aaa",
+      title:
+        valueAddNew.length > 10
+          ? valueAddNew.substring(0, 10) + "..."
+          : valueAddNew,
       body: valueAddNew,
       checked: false
-      // loadMoreCount: ++loadMoreCount
     };
-    fetchedPosts.unshift(newObj);
-
+    let newArray = [...fetchedPosts];
+    newArray.unshift(newObj);
     this.setState({
-      fetchedPosts: fetchedPosts,
-      allPosts: fetchedPosts,
-      renderedPosts: allPosts.slice(0, 10),
+      fetchedPosts: newArray,
+      allPosts: newArray,
+      renderedPosts: newArray.slice(0, 10),
       valueAddNew: "",
       value: ""
     });
     event.preventDefault();
   }
+
   checkboxHandler = (event, id) => {
-    // console.log('this.state = ' + this.state)
     let { allPosts } = this.state;
     const target = event.target;
     let allPostsSpread = [...allPosts];
     allPostsSpread[id].checked = target.checked;
-    this.setState({
-      allPosts: allPostsSpread
-    });
+    this.setState(
+      {
+        allPosts: allPostsSpread
+      },
+      console.log("allPosts[id].checked = ", allPosts[id].checked)
+    );
   };
+
   render() {
     let {
       value,
+      valueAddNew,
       renderedPosts,
       loading,
       loadMoreCount,
@@ -173,7 +175,6 @@ export class Home extends React.Component {
       outOfPosts,
       checkedPosts
     } = this.state;
-
     return (
       <>
         {loading || !fetchedPosts.length ? (
@@ -183,49 +184,16 @@ export class Home extends React.Component {
           </div>
         ) : (
           <>
-            <form className="form_input">
-              <label>
-                Search title/post:
-                <input
-                  className="header_input"
-                  placeholder="Type something good here..."
-                  type="text"
-                  value={this.state.value}
-                  onChange={this.handleFilter}
-                />
-              </label>
-            </form>
-            <form className="form_input" onSubmit={this.handleSubmitNew}>
-              <label>
-                Add New Post:
-                <input
-                  className="header_input"
-                  placeholder="Type something good here..."
-                  type="text"
-                  value={this.state.valueAddNew}
-                  onChange={this.handleAddNewChange}
-                />
-              </label>
-              <input type="submit" value="Submit" />
-            </form>
-            <button
-              disabled={checkedPosts === null}
-              onClick={() => this.handleFilter("")}
-            >
-              <Link to={routes.home}> All </Link>
-            </button>
-            <button
-              disabled={checkedPosts === false}
-              onClick={() => this.handleFilter(false)}
-            >
-              <Link to={routes.active}>Active</Link>
-            </button>
-            <button
-              disabled={checkedPosts}
-              onClick={() => this.handleFilter(true)}
-            >
-              <Link to={routes.completed}>Completed</Link>
-            </button>
+            <Search handleFilter={this.handleFilter} value={value} />
+            <NewPost
+              handleSubmitNew={this.handleSubmitNew}
+              handleAddNewChange={this.handleAddNewChange}
+              valueAddNew={valueAddNew}
+            />
+            <ButtonsStatus
+              checkedPosts={checkedPosts}
+              handleFilter={this.handleFilter}
+            />
             <PostList
               value={value}
               posts={renderedPosts}

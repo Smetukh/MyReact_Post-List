@@ -5,18 +5,8 @@ export class PostListItem extends React.Component {
     super(props);
     this.state = {
       posts: null,
-      loading: true,
-      titleYellow: this.props.post.title,
-      bodyYellow: this.props.post.body
+      loading: true
     };
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return (
-      nextProps.post.title !== this.props.post.title ||
-      nextProps.post.body !== this.props.post.body ||
-      nextProps.value !== this.props.value
-    );
   }
 
   getHighlightedText(text, higlight) {
@@ -41,8 +31,14 @@ export class PostListItem extends React.Component {
     );
   }
   render() {
+    let { post } = this.props;
     return (
-      <div className="postItem">
+      <div
+        className="postItem"
+        style={{
+          background: post.checked ? "#F08080" : "#c1ffc1"
+        }}
+      >
         <h3>Author Id: {this.props.post.id}</h3>
         <h4>
           Title:{" "}
