@@ -1,5 +1,5 @@
 {
-  "name": "todo-app-with-routes",
+  "name": "5-todo-app-with-recompose",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
@@ -8,7 +8,8 @@
     "react": "16.8.6",
     "react-dom": "16.8.6",
     "react-router-dom": "5.0.0",
-    "react-scripts": "2.1.8"
+    "react-scripts": "2.1.8",
+    "recompose": "0.30.0"
   },
   "devDependencies": {
     "typescript": "3.3.3"
