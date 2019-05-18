@@ -13,28 +13,31 @@ const withLifecycle = () =>
     withState("renderedPosts", "renderedPostsHandler", []),
     withState("outOfPosts", "outOfPostsHandler", false),
     withState("loading", "loadingHandler", true),
-    withState("loadMoreCount", "loadMoreCountHandler", 20),
+    withState("loadMoreCount", "loadMoreCountHandler", 10),
     withState("value", "valueHandler", ""),
     withState("valueAddNew", "valueAddNewHandler", ""),
     withState("checkedPosts", "checkedPostsHandler", ""),
     withHandlers({
+      onComponentDidMount: props => () => {},
       handleFilter: props => event => {
-        console.log("props = ", props);
+        console.log("handleFilter props = ", props);
+
         // let { fetchedPosts, checkedPosts } = this.state;
         let filtered = [];
         const searchValue = event.target ? event.target.value : "";
         //show all posts
         if (event === "") {
-          filtered = [...this.props.fetchedPosts];
+          filtered = [...props.fetchedPosts];
         } else {
           //show checked/unchecked
           if (!event.target && !searchValue) {
-            filtered = this.props.fetchedPosts.filter(function(post, index) {
+            filtered = props.fetchedPosts.filter(function(post, index) {
               return post.checked === event;
             });
           } else {
+            console.log("event1 = ", event.target.value);
             // filter results in search bar
-            filtered = this.props.fetchedPosts.filter(function(post, index) {
+            filtered = props.fetchedPosts.filter(function(post, index) {
               let searchTitle = post.title
                 .toLowerCase()
                 .indexOf(searchValue.toLowerCase());
@@ -45,20 +48,73 @@ const withLifecycle = () =>
             });
           }
         }
-        this.props.checkedPostsHandler(
-          !event.target && !searchValue ? event : this.props.checkedPosts
+        props.checkedPostsHandler(
+          !event.target && !searchValue ? event : props.checkedPosts
         );
-        this.props.valueHandler(this.props.searchValue);
-        this.props.allPostsHandler(filtered);
-        this.props.renderedPostsHandler(filtered.slice(0, 10));
-        this.props.loadMoreCountHandler(filtered.length > 10 ? 20 : 0);
+        props.valueHandler(searchValue);
+        props.allPostsHandler(filtered);
+        props.renderedPostsHandler(filtered.slice(0, 10));
+        props.loadMoreCountHandler(filtered.length > 10 ? 20 : 0);
+      },
+      loadMore: props => () => {
+        console.log("loadmore props = ", props);
+        props.loadMoreCountHandler(
+          props.loadMoreCount && props.loadMoreCount < props.allPosts.length
+            ? props.loadMoreCount + 10
+            : 0
+        );
+        props.renderedPostsHandler(
+          props.loadMoreCount
+            ? props.allPosts.slice(0, props.loadMoreCount)
+            : props.renderedPosts
+        );
+        if (!props.loadMoreCount) {
+          props.outOfPostsHandler(true);
+        } else {
+          setTimeout(() => {
+            props.outOfPostsHandler(false);
+          }, 2000);
+        }
+      },
+      handleAddNewChange: props => event => {
+        props.valueAddNewHandler(event.target.value);
+      },
+      handleSubmitNew: props => event => {
+        // let { fetchedPosts, valueAddNew } = this.state;
+        let newObj = {
+          userId: 1,
+          id: 0,
+          title:
+            props.valueAddNew.length > 10
+              ? props.valueAddNew.substring(0, 10) + "..."
+              : props.valueAddNew,
+          body: props.valueAddNew,
+          checked: false
+        };
+
+        let newArray = [...props.fetchedPosts];
+        newArray.unshift(newObj);
         // this.setState({
-        //   checkedPosts: !event.target && !searchValue ? event : checkedPosts,
-        //   value: searchValue,
-        //   allPosts: filtered,
-        //   renderedPosts: filtered.slice(0, 10),
-        //   loadMoreCount: filtered.length > 10 ? 20 : 0
+        //   fetchedPosts: newArray,
+        //   allPosts: newArray,
+        //   renderedPosts: newArray.slice(0, 10),
+        //   valueAddNew: "",
+        //   value: ""
         // });
+        console.log("newArray = ", newArray);
+        props.fetchedPostsHandler(newArray);
+        props.allPostsHandler(newArray);
+        props.renderedPostsHandler(newArray.slice(0, 10));
+        props.valueAddNewHandler("");
+        props.valueHandler("");
+        event.preventDefault();
+      },
+      checkboxHandler: props => (event, id) => {
+        // let { allPosts } = this.state;
+        const target = event.target;
+        let allPostsSpread = [...props.allPosts];
+        allPostsSpread[id].checked = target.checked;
+        props.allPostsHandler(allPostsSpread);
       }
     }),
 
@@ -81,17 +137,6 @@ const withLifecycle = () =>
               this.props.renderedPostsHandler(allPosts.slice(0, 10));
               this.props.loadingHandler(false);
               this.props.handleFilter(this.props.checkedPosts);
-              // this.setState(
-              // {
-              //   fetchedPosts: allPosts,
-              //   allPosts,
-              //   renderedPosts: allPosts.slice(0, 10),
-              //   loading: false
-              // },
-              // () => {
-              //   this.handleFilter(this.props.checkedPosts);
-              // }
-              // );
             })
             .catch(error => console.error(error));
         }, 1500);
@@ -99,7 +144,7 @@ const withLifecycle = () =>
     }),
     // mapProps(props => ({})),
     withProps(props => {
-      console.log("props = ", props);
+      // console.log("withProps props = ", props);
     })
   );
 export default withLifecycle;

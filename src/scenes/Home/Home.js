@@ -268,6 +268,9 @@ export class Home extends React.Component {
     return (
       */
 function Home({
+  loadMore,
+  handleAddNewChange,
+  checkboxHandler,
   value,
   valueAddNew,
   renderedPosts,
@@ -279,18 +282,6 @@ function Home({
   handleFilter,
   handleSubmitNew
 }) {
-  console.log(
-    "home props = ",
-    value,
-    valueAddNew,
-    renderedPosts,
-    loading,
-    loadMoreCount,
-    fetchedPosts,
-    outOfPosts,
-    checkedPosts,
-    handleFilter
-  );
   return (
     // <div>
     //   ++++++++++++
@@ -305,8 +296,8 @@ function Home({
         <>
           <Search handleFilter={handleFilter} value={value} />
           <NewPost
-            // handleSubmitNew={this.handleSubmitNew}
-            // handleAddNewChange={this.handleAddNewChange}
+            handleSubmitNew={handleSubmitNew}
+            handleAddNewChange={handleAddNewChange}
             valueAddNew={valueAddNew}
           />
           <ButtonsStatus
@@ -316,9 +307,9 @@ function Home({
           <PostList
             value={value}
             posts={renderedPosts}
-            // loadMore={this.loadMore}
+            loadMore={loadMore}
             loadMoreCount={loadMoreCount}
-            // checkboxHandler={this.checkboxHandler}
+            checkboxHandler={checkboxHandler}
           />
           {outOfPosts ? <EnhancedModalMore /> : null}
         </>

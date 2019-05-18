@@ -1,6 +1,6 @@
 // import { compose } from "recompose";
 
-// import withSearch from "./withSearch";
+// import withFilter from "./withFilter";
 import withLifecycle from "./withLifecycle";
 // import withPasswordError from "./withPasswordError";
 // import withConfirmPasswordError from "./withConfirmPasswordError";
