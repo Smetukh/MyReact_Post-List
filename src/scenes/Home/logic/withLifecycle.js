@@ -2,23 +2,65 @@ import {
   compose,
   withHandlers,
   withState,
+  withStateHandlers,
   mapProps,
   withProps,
   lifecycle
 } from "recompose";
+
+const setStateData = compose(
+  withState("fetchedPosts", "fetchedPostsHandler", []),
+  withState("allPosts", "allPostsHandler", []),
+  withState("renderedPosts", "renderedPostsHandler", []),
+  withState("loading", "loadingHandler", true),
+  withState("outOfPosts", "outOfPostsHandler", false),
+  withState("loadMoreCount", "loadMoreCountHandler", 0),
+  withState("value", "valueHandler", ""),
+  withState("valueAddNew", "valueAddNewHandler", ""),
+  withState("checkedPosts", "checkedPostsHandler", "")
+);
+
 const withLifecycle = () =>
   compose(
-    withState("fetchedPosts", "fetchedPostsHandler", []),
-    withState("allPosts", "allPostsHandler", []),
-    withState("renderedPosts", "renderedPostsHandler", []),
-    withState("outOfPosts", "outOfPostsHandler", false),
-    withState("loading", "loadingHandler", true),
-    withState("loadMoreCount", "loadMoreCountHandler", 10),
-    withState("value", "valueHandler", ""),
-    withState("valueAddNew", "valueAddNewHandler", ""),
-    withState("checkedPosts", "checkedPostsHandler", ""),
+    setStateData,
+    // withStateHandlers(
+    //   { fetchedPosts: [], allPosts: [], renderedPosts: [], loading: true },
+    //   {
+    //     onComponentDidMount: (state, props) => (data) => ({
+
+    //       fetchedPosts: data.forEach(function(element) {
+    //         element.checked = Math.floor(Math.random() * Math.floor(2))
+    //           ? true
+    //           : false;
+    //       }),
+    //       allPosts: data.forEach(function(element) {
+    //         element.checked = Math.floor(Math.random() * Math.floor(2))
+    //           ? true
+    //           : false;
+    //       }),
+    //       renderedPosts: data.forEach(function(element) {
+    //         element.checked = Math.floor(Math.random() * Math.floor(2))
+    //           ? true
+    //           : false;
+    //       }),
+    //       loading: false
+    //     })
+    //   }
+    // ),
     withHandlers({
-      onComponentDidMount: props => () => {},
+      onComponentDidMount: props => allPosts => {
+        allPosts.forEach(function(element) {
+          element.checked = Math.floor(Math.random() * Math.floor(2))
+            ? true
+            : false;
+        });
+        // props.allPostsHandler(allPosts);
+        props.fetchedPostsHandler(allPosts);
+        props.renderedPostsHandler(allPosts);
+        // props.renderedPostsHandler(allPosts.slice(0, 10));
+        props.loadingHandler(false);
+        props.loadMoreCountHandler(allPosts.length - 10);
+      },
       handleFilter: props => event => {
         console.log("handleFilter props = ", props);
 
@@ -52,29 +94,27 @@ const withLifecycle = () =>
           !event.target && !searchValue ? event : props.checkedPosts
         );
         props.valueHandler(searchValue);
-        props.allPostsHandler(filtered);
-        props.renderedPostsHandler(filtered.slice(0, 10));
+        // props.allPostsHandler(filtered);
+        props.renderedPostsHandler(filtered);
         props.loadMoreCountHandler(filtered.length > 10 ? 20 : 0);
       },
       loadMore: props => () => {
         console.log("loadmore props = ", props);
         props.loadMoreCountHandler(
-          props.loadMoreCount && props.loadMoreCount < props.allPosts.length
-            ? props.loadMoreCount + 10
-            : 0
+          props.loadMoreCount - 10 > 0 ? props.loadMoreCount - 10 : 0
         );
-        props.renderedPostsHandler(
-          props.loadMoreCount
-            ? props.allPosts.slice(0, props.loadMoreCount)
-            : props.renderedPosts
-        );
-        if (!props.loadMoreCount) {
-          props.outOfPostsHandler(true);
-        } else {
-          setTimeout(() => {
-            props.outOfPostsHandler(false);
-          }, 2000);
-        }
+        // props.renderedPostsHandler(
+        //   props.loadMoreCount
+        //     ? props.allPosts.slice(0, props.loadMoreCount)
+        //     : props.renderedPosts
+        // );
+        // if (!props.loadMoreCount) {
+        //   props.outOfPostsHandler(true);
+        // } else {
+        //   setTimeout(() => {
+        //     props.outOfPostsHandler(false);
+        //   }, 2000);
+        // }
       },
       handleAddNewChange: props => event => {
         props.valueAddNewHandler(event.target.value);
@@ -94,14 +134,6 @@ const withLifecycle = () =>
 
         let newArray = [...props.fetchedPosts];
         newArray.unshift(newObj);
-        // this.setState({
-        //   fetchedPosts: newArray,
-        //   allPosts: newArray,
-        //   renderedPosts: newArray.slice(0, 10),
-        //   valueAddNew: "",
-        //   value: ""
-        // });
-        console.log("newArray = ", newArray);
         props.fetchedPostsHandler(newArray);
         props.allPostsHandler(newArray);
         props.renderedPostsHandler(newArray.slice(0, 10));
@@ -126,25 +158,17 @@ const withLifecycle = () =>
         setTimeout(() => {
           fetch(url)
             .then(response => response.json())
-            .then(allPosts => {
-              allPosts.forEach(function(element) {
-                element.checked = Math.floor(Math.random() * Math.floor(2))
-                  ? true
-                  : false;
-              });
-              this.props.allPostsHandler(allPosts);
-              this.props.fetchedPostsHandler(allPosts);
-              this.props.renderedPostsHandler(allPosts.slice(0, 10));
-              this.props.loadingHandler(false);
-              this.props.handleFilter(this.props.checkedPosts);
-            })
+            .then(
+              this.props.onComponentDidMount
+              // this.props.handleFilter(this.props.checkedPosts)
+            )
             .catch(error => console.error(error));
         }, 1500);
       }
     }),
     // mapProps(props => ({})),
     withProps(props => {
-      // console.log("withProps props = ", props);
+      console.log("withProps props = ", props);
     })
   );
 export default withLifecycle;

@@ -37,7 +37,7 @@ function PostList({ posts, loadMore, checkboxHandler, loadMoreCount, value }) {
       <button
         className="buttonMore"
         onClick={loadMore}
-        // disabled={!loadMoreCount}
+        disabled={!loadMoreCount}
         style={{ background: loadMoreCount ? "#40a9f3" : "#D3D3D3" }}
       >
         Load more
