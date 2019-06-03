@@ -1,8 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { compose } from "recompose";
+import * as searchOperations from "../../modules/search/searchOperations";
 
-function Search({ handleFilter, value }) {
-  const handleInput = e => handleFilter(e);
+function Search({ setCurrentSearch, value }) {
+  const handleInput = e => setCurrentSearch(e.target.value);
   return (
     <>
       <form className="form_input">
@@ -27,4 +30,18 @@ Search.defaultProps = {
   value: ""
 };
 
-export default Search;
+const mapDispatchToProps = {
+  setCurrentSearch: searchOperations.actions.setCurrentSearch
+};
+
+const mapStateToProps = state => ({
+  value: state.search.value
+});
+const enhancer = compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+);
+
+export default enhancer(Search);

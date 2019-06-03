@@ -16,20 +16,37 @@ function Home({
   loadMoreCount,
   checkedPosts,
   handleFilter,
-  handleSubmitNew
+  handleSubmitNew,
+  list,
+  handleChecked
+  // setCurrentValue
 }) {
   return (
     <>
-      <Search handleFilter={handleFilter} value={value} />
+      <Search />
       <NewPost
         handleSubmitNew={handleSubmitNew}
         handleAddNewChange={handleAddNewChange}
         valueAddNew={valueAddNew}
       />
-      <ButtonsStatus checkedPosts={checkedPosts} handleFilter={handleFilter} />
+      <ButtonsStatus />
       <PostList
-        value={value}
-        posts={renderedPosts.slice(0, renderedPosts.length - loadMoreCount)}
+        // value={value}
+        // posts={[...list]
+        //   .slice(0, list.length - loadMoreCount)
+        //   .reverse()
+        //   .filter(function(post, index) {
+        //     let searchTitle = post.title
+        //       .toLowerCase()
+        //       .indexOf(value.toLowerCase());
+        //     let searchBody = post.body
+        //       .toLowerCase()
+        //       .indexOf(value.toLowerCase());
+        //       //filter by checked value
+        //     return (checkedPosts === '' || post.checked === checkedPosts)
+        //       //filter by search value
+        //       && (searchTitle > -1 || searchBody > -1);
+        // })}
         loadMore={loadMore}
         loadMoreCount={loadMoreCount}
         checkboxHandler={checkboxHandler}

@@ -1,9 +1,15 @@
 import React from "react";
 import { routes } from "../router";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { compose } from "recompose";
+import * as searchOperations from "../../modules/search/searchOperations";
 
-function ButtonsStatus({ handleFilter, checkedPosts }) {
-  const clickHandler = e => handleFilter(e);
+function ButtonsStatus({ handleChecked, checkedPosts }) {
+  const clickHandler = status => {
+    console.log("status = ", status);
+    return handleChecked(status);
+  };
   return (
     <>
       <button
@@ -40,4 +46,18 @@ function ButtonsStatus({ handleFilter, checkedPosts }) {
 ButtonsStatus.propTypes = {};
 ButtonsStatus.defaultProps = {};
 
-export default ButtonsStatus;
+const mapDispatchToProps = {
+  handleChecked: searchOperations.actions.handleChecked
+};
+
+const mapStateToProps = state => ({
+  checkedPosts: state.search.checkedPosts
+});
+const enhancer = compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+);
+
+export default enhancer(ButtonsStatus);
