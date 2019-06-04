@@ -14,6 +14,18 @@ export default handleActions(
       return {
         todos: new1
       };
+    },
+    [actions.changePostStatus]: (state, action) => {
+      const newStateTodos = [...state.todos];
+      function isChecked(element) {
+        return element.id === action.payload;
+      }
+      let indexChecked = newStateTodos.findIndex(isChecked);
+      newStateTodos[indexChecked].checked = !newStateTodos[indexChecked]
+        .checked;
+      return {
+        todos: newStateTodos
+      };
     }
   },
   initialState

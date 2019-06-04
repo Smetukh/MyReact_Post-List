@@ -10,6 +10,7 @@ function ButtonsStatus({ handleChecked, checkedPosts }) {
     console.log("status = ", status);
     return handleChecked(status);
   };
+
   return (
     <>
       <button

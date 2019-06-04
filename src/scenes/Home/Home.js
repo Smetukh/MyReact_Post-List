@@ -9,17 +9,9 @@ import "../../styles.css";
 function Home({
   loadMore,
   handleAddNewChange,
-  checkboxHandler,
-  value,
   valueAddNew,
-  renderedPosts,
   loadMoreCount,
-  checkedPosts,
-  handleFilter,
-  handleSubmitNew,
-  list,
-  handleChecked
-  // setCurrentValue
+  handleSubmitNew
 }) {
   return (
     <>
@@ -30,31 +22,10 @@ function Home({
         valueAddNew={valueAddNew}
       />
       <ButtonsStatus />
-      <PostList
-        // value={value}
-        // posts={[...list]
-        //   .slice(0, list.length - loadMoreCount)
-        //   .reverse()
-        //   .filter(function(post, index) {
-        //     let searchTitle = post.title
-        //       .toLowerCase()
-        //       .indexOf(value.toLowerCase());
-        //     let searchBody = post.body
-        //       .toLowerCase()
-        //       .indexOf(value.toLowerCase());
-        //       //filter by checked value
-        //     return (checkedPosts === '' || post.checked === checkedPosts)
-        //       //filter by search value
-        //       && (searchTitle > -1 || searchBody > -1);
-        // })}
-        loadMore={loadMore}
-        loadMoreCount={loadMoreCount}
-        checkboxHandler={checkboxHandler}
-      />
+      <PostList loadMore={loadMore} loadMoreCount={loadMoreCount} />
     </>
   );
 }
-// }
 
 Home = withLogic()(Home);
 export default Home;
