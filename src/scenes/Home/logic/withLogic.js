@@ -82,7 +82,7 @@ const withLogic = () =>
   );
 
 const mapDispatchToProps = {
-  addToDo: todosOperations.actions.addToDo,
+  addToDo: todosOperations.addToDo,
   changePostStatus: todosOperations.actions.changePostStatus,
   handleChecked: searchOperations.actions.handleChecked
 };
