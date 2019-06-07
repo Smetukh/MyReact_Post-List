@@ -3,23 +3,21 @@ import PropTypes from "prop-types";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import PostListItem from "./PostListItem/PostListItem";
-import * as todosOperations from "../../modules/todos/todosOperations";
-
+import { todosOperations, todosSelectors } from "../../modules/todos";
 import "../../styles.css";
 
 function PostList({
   list,
   loadMore,
-  changePostStatus,
+  changeTodoStatus,
+  removeTodo,
   loadMoreCount,
   value = "",
   checkedPosts
 }) {
-  console.log("loadMoreCount = ", loadMoreCount);
   const posts = [...list]
     .reverse()
     .slice(0, list.length - loadMoreCount)
-
     .filter(function(post, index) {
       let searchTitle = value
         ? post.title.toLowerCase().indexOf(value.toLowerCase())
@@ -36,24 +34,33 @@ function PostList({
         (searchTitle > -1 || searchBody > -1)
       );
     });
+  let shownPosts = posts.slice(0, 10 + loadMoreCount * 10); //|| list.length > posts.length
   return (
     <>
       <ul>
-        {posts &&
-          posts.map((post, key) => (
+        {shownPosts &&
+          shownPosts.map((post, key) => (
             <div key={post + key} className="posts">
               <li>
                 <form className="posts">
-                  <label className="inline_block">
-                    Done:
-                    <input
-                      name="isGoing"
-                      type="checkbox"
-                      checked={post.checked}
-                      onChange={e => changePostStatus(post.id)}
-                    />
-                  </label>
-                  {/* <br /> */}
+                  <div className="leftSide">
+                    <button
+                      className="buttonMore buttonRed"
+                      type="button"
+                      onClick={() => removeTodo(post.id)}
+                    >
+                      Remove
+                    </button>
+                    <label className="inline_block">
+                      Done:
+                      <input
+                        name="isGoing"
+                        type="checkbox"
+                        checked={post.checked}
+                        onChange={e => changeTodoStatus(post.id)}
+                      />
+                    </label>
+                  </div>
                   <PostListItem
                     className="inline_block"
                     post={post}
@@ -68,8 +75,10 @@ function PostList({
       <button
         className="buttonMore"
         onClick={loadMore}
-        disabled={!loadMoreCount}
-        style={{ background: loadMoreCount ? "#40a9f3" : "#D3D3D3" }}
+        disabled={shownPosts.length >= posts.length}
+        style={{
+          background: shownPosts.length >= posts.length ? "#D3D3D3" : "#40a9f3"
+        }}
       >
         Load more
       </button>
@@ -78,12 +87,13 @@ function PostList({
 }
 
 const mapStateToProps = state => ({
-  list: state.todos.todos,
+  list: todosSelectors.getTodos(state),
   value: state.search.value,
   checkedPosts: state.search.checkedPosts
 });
 const mapDispatchToProps = {
-  changePostStatus: todosOperations.actions.changePostStatus
+  changeTodoStatus: todosOperations.changeTodoStatus,
+  removeTodo: todosOperations.removeTodo
 };
 
 const enhancer = compose(

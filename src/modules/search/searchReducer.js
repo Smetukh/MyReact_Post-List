@@ -13,7 +13,6 @@ export default handleActions(
       };
     },
     [actions.handleChecked]: (state, action) => {
-      console.log("handleChecked action = ", action.payload);
       return {
         checkedPosts: action.payload
       };

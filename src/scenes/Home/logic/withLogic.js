@@ -24,28 +24,18 @@ const withLogic = () =>
     ),
     withStateHandlers(
       {
-        loading: true,
         loadMoreCount: 0,
         valueAddNew: ""
       },
       {
         onComponentDidMount: (state, props) => data => {
-          data.forEach(function(element) {
-            element.checked = Math.floor(Math.random() * Math.floor(2))
-              ? true
-              : false;
-          });
-          if (!props.list.length) props.addToDo(data);
+          if (!props.list.length) props.listTodos();
+          // filter todo status
           props.handleChecked(props.checkedPosts);
-          return {
-            loading: false,
-            loadMoreCount: props.list.length - 10
-          };
         },
         loadMore: (state, props) => () => {
           return {
-            loadMoreCount:
-              state.loadMoreCount - 10 > 0 ? state.loadMoreCount - 10 : 0
+            loadMoreCount: state.loadMoreCount + 1
           };
         },
         handleAddNewChange: (state, props) => event => ({
@@ -67,15 +57,17 @@ const withLogic = () =>
           event.preventDefault();
           return {
             valueAddNew: "",
-            loadMoreCount:
-              state.loadMoreCount - 10 > 0 ? state.loadMoreCount - 10 : 0
+            loadMoreCount: 0
           };
         }
       }
     ),
     lifeCycleData,
     pure,
-    branch(props => props.loading, renderComponent(EnhancedModal)),
+    branch(
+      props => props.isLoading || props.isLoading === undefined,
+      renderComponent(EnhancedModal)
+    ),
     withProps(props => {
       console.log("withProps = ", props);
     })
@@ -83,12 +75,13 @@ const withLogic = () =>
 
 const mapDispatchToProps = {
   addToDo: todosOperations.addToDo,
-  changePostStatus: todosOperations.actions.changePostStatus,
+  listTodos: todosOperations.listTodos,
   handleChecked: searchOperations.actions.handleChecked
 };
 
 const mapStateToProps = state => ({
   list: todosSelectors.getTodos(state), //state.todos.todos,
+  isLoading: todosSelectors.getLoadingStatus(state), //state.todos.todos,
   value: state.search.value
 });
 

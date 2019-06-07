@@ -7,7 +7,6 @@ import * as searchOperations from "../../modules/search/searchOperations";
 
 function ButtonsStatus({ handleChecked, checkedPosts }) {
   const clickHandler = status => {
-    console.log("status = ", status);
     return handleChecked(status);
   };
 

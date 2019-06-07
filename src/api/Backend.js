@@ -1,18 +1,17 @@
 /* global window */
-import uuid from 'uuid/v4';
+import uuid from "uuid/v4";
 
 const methods = {
-  post: 'post',
-  get: 'get',
-  patch: 'patch',
-  delete: 'delete',
+  post: "post",
+  get: "get",
+  patch: "patch",
+  delete: "delete"
 };
 
-const saveCache = (cache) =>
-  window.localStorage.setItem('cache', JSON.stringify(cache));
-
+const saveCache = cache =>
+  window.localStorage.setItem("cache", JSON.stringify(cache));
 const getCache = async () => {
-  const cache = window.localStorage.getItem('cache');
+  const cache = window.localStorage.getItem("cache");
 
   if (!cache) {
     return [];
@@ -26,13 +25,13 @@ function getRandomArbitrary(min, max) {
 }
 
 const randomDelay = () =>
-  new Promise((res) => {
+  new Promise(res => {
     const delay = getRandomArbitrary(200, 2000);
 
     setTimeout(res, delay);
   });
 
-const getId = (endpoint) => endpoint.split('/')[1];
+const getId = endpoint => endpoint.split("/")[1];
 
 const handleRequest = async (endpoint, options, cache) => {
   if (options.body) {
@@ -45,10 +44,8 @@ const handleRequest = async (endpoint, options, cache) => {
     }
 
     case methods.post: {
-      if (endpoint === 'todos/remove') {
-        const newCache = cache.filter(
-          (todo) => !options.body.includes(todo.id),
-        );
+      if (endpoint === "todos/remove") {
+        const newCache = cache.filter(todo => !options.body.includes(todo.id));
 
         await saveCache(newCache);
 
@@ -60,7 +57,7 @@ const handleRequest = async (endpoint, options, cache) => {
         ...options.body,
         id: uuid(),
         createdAt: timestamp,
-        updatedAt: timestamp,
+        updatedAt: timestamp
       };
       const newCache = cache.concat(newTodo);
 
@@ -74,7 +71,7 @@ const handleRequest = async (endpoint, options, cache) => {
 
       let newTodo;
 
-      const newCache = cache.map((todo) => {
+      const newCache = cache.map(todo => {
         if (todo.id !== id) {
           return todo;
         }
@@ -82,7 +79,7 @@ const handleRequest = async (endpoint, options, cache) => {
         newTodo = {
           ...todo,
           ...options.body,
-          updatedAt: new Date().getTime(),
+          updatedAt: new Date().getTime()
         };
 
         return newTodo;
@@ -96,7 +93,7 @@ const handleRequest = async (endpoint, options, cache) => {
     case methods.delete: {
       const id = getId(endpoint);
 
-      const newCache = cache.filter((todo) => todo.id !== id);
+      const newCache = cache.filter(todo => todo.id !== id);
 
       await saveCache(newCache);
 
@@ -111,8 +108,8 @@ const handleRequest = async (endpoint, options, cache) => {
 export class AbortError extends Error {
   constructor() {
     super();
-    this.name = 'AbortError';
-    this.message = 'Request was aborted.';
+    this.name = "AbortError";
+    this.message = "Request was aborted.";
     this.stack = new Error().stack;
   }
 }
@@ -150,6 +147,7 @@ export function createAbortSignal() {
 }
 
 const fetchData = async (endpoint, options = {}) => {
+  console.log("options = ", options);
   if (options.signal) {
     options.signal();
   }
